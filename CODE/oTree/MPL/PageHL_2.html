@@ -1,0 +1,203 @@
+
+
+{{ block content }}
+
+<!-- Main page heading -->
+<h1> Choice </h1>
+
+<!-- Instructions container with Bootstrap styling -->
+<div class="container p-3 my-3 border" style="font-size:14pt">
+  <!-- Instructions text explaining the task -->
+  <p align = "justify"> In each of the following 10 rows in the table, please select your preferred option between A and B. </p>
+  <p>When done, please click on the button "Continue".</p>
+  <p align = "justify"> After you have chosen, one row will be randomly chosen and the lottery you chose will be played. <br> The outcome of this lottery will be paid to you.
+  </p>
+
+
+  <!-- Main MPL table -->
+  <table class="table">
+    <!-- Table header -->
+    <thead>
+      <tr>
+        <th>Row</th>
+        <th>Lottery A</th>
+        <th colspan="2">Your Choice</th> <!-- Spans 2 columns for A and B choices -->
+        <th>Lottery B</th>
+      </tr>
+    </thead>
+    <!-- Table body with lottery rows -->
+    <tbody>
+      <!-- Loop through each row in the lottery table (generated from Python) -->
+      {% for row in lottery_table %}
+      <tr>
+        <!-- Row number (1-10) -->
+        <td>{{ row.row_number }}</td>
+        <!-- Lottery A description (probabilities and payoffs) -->
+        <td>{{ row.lottery_a.description }}</td>
+        <!-- Choice A radio button - centered -->
+        <td style="text-align: center;">
+          <!-- Radio button for choosing lottery A -->
+          <input type="radio" name="{{ row.choice_field }}" value="A"> A
+        </td>
+        <!-- Choice B radio button - centered -->
+        <td style="text-align: center;">
+          <!-- Radio button for choosing lottery B -->
+          <input type="radio" name="{{ row.choice_field }}" value="B"> B
+        </td>
+        <!-- Lottery B description (probabilities and payoffs) -->
+        <td>{{ row.lottery_b.description }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+</div>
+
+<!-- Continue button container -->
+<div class="container">
+  <!-- Spacer row -->
+  <div class="row">
+    &nbsp;
+  </div>
+  <!-- Button row with right alignment -->
+  <div class="row" style="padding-left:135px;">
+    <div class="col-md-10">
+      <!-- Empty column for spacing -->
+    </div>
+    <div class="col-md-2">
+      <!-- Submit button to continue to next page -->
+      <button name="btn_submit" value="True" class="btn btn-primary btn-large">
+        <span style="font-size:18pt">Continue</span>
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+
+
+{{ endblock }}
+
+
+{{ block scripts }}
+<!-- JavaScript to handle radio button interactions and highlighting -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for the DOM to be fully loaded before executing
+    
+    // Get all radio buttons in the form
+    const radioButtons = document.querySelectorAll('input[type="radio"]');
+    
+    console.log('Found radio buttons:', radioButtons.length); // Debug: log number of radio buttons found
+    
+    // Add event listener to each radio button for the 'change' event
+    radioButtons.forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            console.log('Radio changed:', this.name, this.value); // Debug: log which radio was changed
+            
+            // Get the table row that contains this radio button
+            const row = this.closest('tr');
+            const cells = row.querySelectorAll('td');
+            
+            console.log('Found cells in row:', cells.length); // Debug: log number of cells in row
+            
+            // Remove any existing choice classes from all cells in this row
+            // This ensures only one lottery is highlighted per row
+            cells.forEach(cell => {
+                cell.classList.remove('cell-choice-a', 'cell-choice-b');
+            });
+            
+            // Add the appropriate highlighting class based on the selected value
+            if (this.value === 'A') {
+                // Highlight lottery A column (second cell - index 1)
+                if (cells[1]) {
+                    cells[1].classList.add('cell-choice-a');
+                    console.log('Added cell-choice-a to cell 1'); // Debug: confirm A highlighting
+                }
+            } else if (this.value === 'B') {
+                // Highlight lottery B column (last cell - index 4)
+                if (cells[4]) {
+                    cells[4].classList.add('cell-choice-b');
+                    console.log('Added cell-choice-b to cell 4'); // Debug: confirm B highlighting
+                }
+            }
+        });
+        
+        // Also add click event as backup in case 'change' doesn't fire
+        radio.addEventListener('click', function() {
+            // Manually trigger the change event
+            this.dispatchEvent(new Event('change'));
+        });
+    });
+    
+    // Check for any pre-selected values on page load
+    // This handles cases where the form might have existing values
+    radioButtons.forEach(function(radio) {
+        if (radio.checked) {
+            console.log('Pre-selected radio found:', radio.name, radio.value); // Debug: log pre-selected values
+            
+            const row = radio.closest('tr');
+            const cells = row.querySelectorAll('td');
+            
+            // Remove any existing choice classes from all cells
+            cells.forEach(cell => {
+                cell.classList.remove('cell-choice-a', 'cell-choice-b');
+            });
+            
+            // Apply highlighting based on pre-selected value
+            if (radio.value === 'A') {
+                // Highlight lottery A column (second cell - index 1)
+                if (cells[1]) {
+                    cells[1].classList.add('cell-choice-a');
+                }
+            } else if (radio.value === 'B') {
+                // Highlight lottery B column (last cell - index 4)
+                if (cells[4]) {
+                    cells[4].classList.add('cell-choice-b');
+                }
+            }
+        }
+    });
+});
+</script>
+
+{{ endblock }} 
+
+{{ block styles }}
+<style>
+  /* Radio button styling - make them larger and more visible */
+  input[type=radio] {
+    transform: scale(1.5);
+    /* Make radio buttons 1.5x larger */
+    /* margin: 12px -10px 0px -30px; */
+    /* Optional margin adjustment (commented out) */
+  }
+
+  /* Style for selected radio buttons - blue accent color */
+  input[type=radio]:checked {
+    accent-color: #007bff;
+    /* Bootstrap primary blue */
+    background-color: #007bff;
+  }
+
+  /* Fallback styling for older browsers that don't support accent-color */
+  input[type=radio]:checked::before {
+    background-color: #007bff;
+  }
+
+  /* Cell background colors for visual feedback when choices are made */
+  td.cell-choice-a {
+    background-color: #dddddd !important;
+    /* Light grey for lottery A selection */
+    transition: background-color 0.3s ease;
+    /* Smooth color transition */
+  }
+
+  td.cell-choice-b {
+    background-color: #dddddd !important;
+    /* Same grey for lottery B selection */
+    transition: background-color 0.3s ease;
+    /* Smooth color transition */
+  }
+</style>
+{{ endblock }}

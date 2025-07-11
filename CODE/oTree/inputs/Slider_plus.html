@@ -1,0 +1,271 @@
+{{ block title }}
+    Slider Plus
+{{ endblock }}
+
+{{ block content }}
+
+<div class="slider-container">
+    <label for="input_slider">Please select a value between 0 and 100:</label>
+    <div class="slider-wrapper">
+        <div class="slider-with-labels">
+            <span class="slider-label-left">0</span>
+            <input type="range" 
+                   id="input_slider" 
+                   name="input_slider" 
+                   min="0" 
+                   max="100" 
+                   step="1" 
+                   class="custom-slider">
+            <span class="slider-label-right">100</span>
+        </div>
+        <div id="slider-value" class="slider-value">Click on the slider to select a value</div>
+    </div>
+</div>
+
+<!-- {{ form.input_slider.errors }} -->
+
+<br>
+<div id="next-button-container" style="display: none;">
+    {{ next_button }}
+</div>
+
+{{ endblock }}
+
+{{ block styles }}
+<style>
+    /* Main container for the entire slider component */
+    .slider-container {
+        margin: 20px 0;      /* Vertical spacing around the container */
+        text-align: center;  /* Center-align all content within */
+    }
+    
+    /* Wrapper for the slider and its associated elements */
+    .slider-wrapper {
+        margin: 20px 0;      /* Vertical spacing around the wrapper */
+        position: relative;  /* Allows absolute positioning of child elements if needed */
+    }
+    
+    /* Container for slider with left and right labels (0 and 100) */
+    .slider-with-labels {
+        display: flex;       /* Use flexbox for horizontal layout */
+        align-items: center; /* Vertically center all items */
+        gap: 10px;          /* Space between label, slider, and label */
+        margin: 10px 0;     /* Vertical spacing around this container */
+    }
+    
+    /* Styling for the "0" and "100" labels on either side of slider */
+    .slider-label-left,
+    .slider-label-right {
+        font-weight: bold;   /* Make labels stand out */
+        font-size: 16px;     /* Readable label size */
+        color: #666;         /* Medium gray color */
+        min-width: 30px;     /* Ensure consistent width for alignment */
+        text-align: center;  /* Center the text within the label area */
+    }
+    
+    /* Main slider input styling */
+    .custom-slider {
+        flex: 1;                        /* Take up remaining space between labels */
+        height: 8px;                    /* Thin track height for modern look */
+        border-radius: 5px;             /* Rounded corners for the track */
+        background: #ddd;               /* Light gray background for track */
+        outline: none;                  /* Remove default focus outline */
+        opacity: 0.7;                   /* Slightly transparent initially */
+        transition: opacity 0.2s;       /* Smooth opacity change on hover */
+        -webkit-appearance: none;       /* Remove default browser styling (WebKit) */
+        appearance: none;               /* Remove default browser styling (standard) */
+    }
+    
+    /* Hover effect - make slider more prominent when user hovers */
+    .custom-slider:hover {
+        opacity: 1;  /* Full opacity on hover for better visibility */
+    }
+    
+    /* WEBKIT BROWSERS (Chrome, Safari, Edge): Hide the slider thumb initially */
+    .custom-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;  /* Remove default WebKit thumb styling */
+        appearance: none;          /* Remove default thumb styling */
+        width: 0;                  /* No width = invisible thumb */
+        height: 0;                 /* No height = invisible thumb */
+        background: transparent;   /* Transparent background */
+        cursor: pointer;           /* Show pointer cursor when hovering */
+        transition: all 0.3s ease; /* Smooth transition when thumb appears */
+    }
+    
+    /* FIREFOX: Hide the slider thumb initially */
+    .custom-slider::-moz-range-thumb {
+        width: 0;                  /* No width = invisible thumb */
+        height: 0;                 /* No height = invisible thumb */
+        background: transparent;   /* Transparent background */
+        cursor: pointer;           /* Show pointer cursor when hovering */
+        border: none;              /* Remove default border */
+        transition: all 0.3s ease; /* Smooth transition when thumb appears */
+    }
+    
+    /* WEBKIT BROWSERS: Show thumb after user clicks (when .activated class is added) */
+    .custom-slider.activated::-webkit-slider-thumb {
+        width: 20px;                           /* Visible thumb width */
+        height: 20px;                          /* Visible thumb height */
+        background: #04AA6D;                   /* Green color for active state */
+        border-radius: 50%;                    /* Make it perfectly circular */
+        box-shadow: 0 0 4px rgba(0,0,0,0.3);   /* Subtle shadow for depth */
+    }
+    
+    /* FIREFOX: Show thumb after user clicks (when .activated class is added) */
+    .custom-slider.activated::-moz-range-thumb {
+        width: 20px;                           /* Visible thumb width */
+        height: 20px;                          /* Visible thumb height */
+        background: #04AA6D;                   /* Green color for active state */
+        border-radius: 50%;                    /* Make it perfectly circular */
+        box-shadow: 0 0 4px rgba(0,0,0,0.3);   /* Subtle shadow for depth */
+        border: none;                          /* Remove any default border */
+    }
+    
+    /* WEBKIT BROWSERS: Style the slider track (the line the thumb moves along) */
+    .custom-slider::-webkit-slider-track {
+        width: 100%;         /* Full width of the slider container */
+        height: 8px;         /* Same height as the main slider element */
+        cursor: pointer;     /* Show pointer cursor when hovering over track */
+        background: #ddd;    /* Light gray background */
+        border-radius: 5px;  /* Rounded corners to match main slider */
+    }
+    
+    /* FIREFOX: Style the slider track */
+    .custom-slider::-moz-range-track {
+        width: 100%;         /* Full width of the slider container */
+        height: 8px;         /* Same height as the main slider element */
+        cursor: pointer;     /* Show pointer cursor when hovering over track */
+        background: #ddd;    /* Light gray background */
+        border-radius: 5px;  /* Rounded corners to match main slider */
+        border: none;        /* Remove any default border */
+    }
+    
+    /* Styling for the value display box that shows the selected number */
+    .slider-value {
+        margin-top: 15px;           /* Space above the value display */
+        font-size: 18px;            /* Large, readable text */
+        font-weight: bold;          /* Make the value stand out */
+        color: #333;                /* Dark gray text color */
+        min-height: 25px;           /* Consistent height even when empty */
+        padding: 10px;              /* Internal spacing around text */
+        background-color: #f8f9fa;  /* Light gray background */
+        border: 2px solid #e9ecef;  /* Light gray border */
+        border-radius: 8px;         /* Rounded corners for modern look */
+        display: inline-block;      /* Allow width control while staying inline */
+        min-width: 200px;           /* Minimum width for consistent appearance */
+    }
+    
+    /* Enhanced styling when a value has been selected (when .has-value class is added) */
+    .slider-value.has-value {
+        color: #04AA6D;             /* Green text to match slider thumb */
+        border-color: #04AA6D;      /* Green border to show active state */
+        background-color: #f0fff4;  /* Very light green background */
+    }
+    
+    /* Container for the next button - controls its visibility and animation */
+    #next-button-container {
+        margin-top: 20px;                    /* Space above the button */
+        opacity: 0;                          /* Initially invisible */
+        transition: opacity 0.3s ease-in-out; /* Smooth fade-in/fade-out animation */
+    }
+    
+    /* Show the next button with full opacity (when .show class is added) */
+    #next-button-container.show {
+        opacity: 1;  /* Fully visible */
+    }
+</style>
+{{ endblock }}
+
+{{ block scripts }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('input_slider');
+    const valueDisplay = document.getElementById('slider-value');
+    const nextButtonContainer = document.getElementById('next-button-container');
+    let hasBeenClicked = false;
+    
+    // Initially hide the value by clearing it
+    slider.value = '';
+    
+    // Function to update the display
+    function updateValueDisplay(value) {
+        if (value !== '') {
+            valueDisplay.textContent = `Selected value: ${value}`;
+            valueDisplay.classList.add('has-value');
+            // Show the next button when a value is selected
+            nextButtonContainer.style.display = 'block';
+            setTimeout(() => {
+                nextButtonContainer.classList.add('show');
+            }, 10);
+        } else {
+            valueDisplay.textContent = 'Click on the slider to select a value';
+            valueDisplay.classList.remove('has-value');
+            // Hide the next button when no value is selected
+            nextButtonContainer.classList.remove('show');
+            nextButtonContainer.style.display = 'none';
+        }
+    }
+    
+    // Handle first click/touch on slider
+    function handleFirstInteraction(event) {
+        if (!hasBeenClicked) {
+            hasBeenClicked = true;
+            slider.classList.add('activated');
+            
+            // Calculate the clicked position and set value
+            const rect = slider.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width;
+            const value = Math.round(percent * 100);
+            
+            // Ensure value is within bounds
+            const clampedValue = Math.max(0, Math.min(100, value));
+            slider.value = clampedValue;
+            
+            updateValueDisplay(clampedValue);
+        }
+    }
+    
+    // Handle touch events for mobile
+    function handleFirstTouch(event) {
+        if (!hasBeenClicked) {
+            hasBeenClicked = true;
+            slider.classList.add('activated');
+            
+            const touch = event.touches[0];
+            const rect = slider.getBoundingClientRect();
+            const percent = (touch.clientX - rect.left) / rect.width;
+            const value = Math.round(percent * 100);
+            
+            const clampedValue = Math.max(0, Math.min(100, value));
+            slider.value = clampedValue;
+            
+            updateValueDisplay(clampedValue);
+        }
+    }
+    
+    // Add event listeners for first interaction
+    slider.addEventListener('mousedown', handleFirstInteraction);
+    slider.addEventListener('touchstart', handleFirstTouch);
+    
+    // Handle value changes (for after activation)
+    slider.addEventListener('input', function() {
+        if (hasBeenClicked) {
+            updateValueDisplay(this.value);
+        }
+    });
+    
+    // Prevent default behavior before activation
+    slider.addEventListener('input', function(event) {
+        if (!hasBeenClicked) {
+            event.preventDefault();
+            this.value = '';
+        }
+    });
+    
+    // Initialize display
+    updateValueDisplay('');
+});
+</script>
+{{ endblock }}
+
+
