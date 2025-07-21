@@ -1,0 +1,154 @@
+{{ block title }}
+    Choice
+{{ endblock }}
+{{ block content }}
+
+
+<div class="box">
+
+<p> Please click on your preferred action and confirm it.</p>
+
+<p class="text-center"> I choose:</p>
+
+<div class="d-flex justify-content-around my-3" id="choice_card_area">
+    <div class="card choice-card text-center" data-value="Pass" style="width: 12rem;">
+        <div class="card-body d-flex flex-column justify-content-center p-3">
+            <button type="button" class="btn btn-lg btn-outline-primary w-100"><b><span style="font-size: 1.5em;">A</span></b></button>
+        </div>
+    </div>
+    <div class="card choice-card text-center" data-value="Take" style="width: 12rem;">
+        <div class="card-body d-flex flex-column justify-content-center p-3">
+            <button type="button" class="btn btn-lg btn-outline-primary w-100"><b><span style="font-size: 1.5em;">B</span></b></button>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="choice" id="hidden_choice" value="" required>
+<!-- Make sure the 'name' attribute of the hidden input ("choice") 
+     matches the player field in your models.py -->
+
+<!-- 
+{{ formfield player.choice }} --> <!-- This should be commented out or removed -->
+</div><br>
+
+<!-- 
+{{ formfield player.choice }} -->
+</div><br>
+
+<div class="container text-center" style="font-size:14pt">
+    <button name="btn_submit" value="True" class="btn btn-outline-primary btn-large">
+        <span style="font-size:24pt">Confirm</span>
+    </button>
+</div>
+
+{{ endblock }}
+
+
+{{ block styles }}
+<link href="{{ static 'button/mystyle0.css' }}" rel="stylesheet">
+
+<style>
+    .choice-card {
+        cursor: pointer;
+        transition: border-color 0.15s, box-shadow 0.15s, border-width 0.15s;
+        margin: 0 2rem;
+    }
+
+    .choice-card .btn {
+        font-weight: bold;
+        transition: opacity 0.15s, background 0.15s, color 0.15s;
+    }
+
+    .choice-card .btn.btn-primary,
+    .choice-card .btn.btn-primary * {
+        color: #fff !important;
+    }
+
+    .choice-card .btn.btn-faded {
+        opacity: 0.5;
+        filter: grayscale(30%);
+    }
+</style>
+{{ endblock }}
+
+{{ block scripts }}
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const choiceCards = document.querySelectorAll('.choice-card');
+        const hiddenChoiceInput = document.getElementById('hidden_choice');
+        const form = document.querySelector("form");
+
+        if (choiceCards.length > 0 && hiddenChoiceInput) {
+            choiceCards.forEach(card => {
+                const btn = card.querySelector("button");
+                if (btn) {
+                    btn.addEventListener('mouseenter', function () {
+                        btn.style.color = '#fff';
+                    });
+                    btn.addEventListener('mouseleave', function () {
+                        // If selected, keep white, else revert
+                        if (card.classList.contains('border-primary')) {
+                            btn.style.color = '#fff';
+                        } else {
+                            btn.style.color = '';
+                        }
+                    });
+                }
+                card.addEventListener('click', function () {
+                    choiceCards.forEach(c => {
+                        c.classList.remove('border-primary', 'shadow');
+                        c.style.borderWidth = '';
+                        const btn = c.querySelector("button");
+                        if (btn) {
+                            btn.classList.remove('btn-primary');
+                            btn.classList.remove('btn-faded');
+                            btn.style.color = '';
+                            if (!btn.classList.contains('btn-outline-primary')) {
+                                btn.classList.add('btn-outline-primary');
+                            }
+                        }
+                    });
+
+                    // Highlight the selected card/button
+                    this.classList.add('border-primary', 'shadow');
+                    this.style.borderWidth = '3px';
+                    const btn = this.querySelector("button");
+                    if (btn) {
+                        btn.classList.remove('btn-outline-primary');
+                        btn.classList.add('btn-primary');
+                        btn.style.color = '#fff';
+                    }
+
+                    // Fade the unselected button
+                    choiceCards.forEach(c => {
+                        if (c !== this) {
+                            const otherBtn = c.querySelector("button");
+                            if (otherBtn) {
+                                otherBtn.classList.add('btn-faded');
+                            }
+                        }
+                    });
+
+                    // Remove fade from selected button
+                    if (btn) {
+                        btn.classList.remove('btn-faded');
+                    }
+
+                    hiddenChoiceInput.value = this.dataset.value;
+                });
+            });
+        }
+
+        if (form) {
+            form.addEventListener("submit", function (event) {
+                var choiceValue = hiddenChoiceInput ? hiddenChoiceInput.value : "";
+                if (!choiceValue) {
+                    alert("Please make a choice by clicking 'Pass' or 'Take'.");
+                    event.preventDefault();
+                    return;
+                }
+            });
+        }
+    });
+</script>
+{{ endblock }}
