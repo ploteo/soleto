@@ -32,13 +32,19 @@ class Player(BasePlayer):
 
 # PAGES
 
-class Button(Page):
+class Button_1(Page):
+    form_model = 'player'
+    form_fields = ['choice']
+
+class Button_2(Page):
     form_model = 'player'
     form_fields = ['choice']
     
-
+class Button_3(Page):
+    form_model = 'player'
+    form_fields = ['choice']
   
     
 
 
-page_sequence = [Button]
+page_sequence = [Button_1,Button_2,Button_3]
