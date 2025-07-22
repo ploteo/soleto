@@ -4,7 +4,7 @@ from otree.api import *
 class C(BaseConstants):
     NAME_IN_URL = 'PGG'  # App name for URL
     PLAYERS_PER_GROUP = 3  # Number of players per group
-    NUM_ROUNDS = 4  # Number of rounds
+    NUM_ROUNDS = 5  # Number of rounds
     ENDOWMENT = cu(100)  # Each player's initial endowment
     MULTIPLIER = 2  # Multiplier for the public good
 
